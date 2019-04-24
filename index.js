@@ -1,6 +1,3 @@
-
-let callbacks = {}
-let index=0
 module.exports = {
 	child(mod){
 		if (!mod.parent) {
@@ -18,7 +15,8 @@ module.exports = {
 	},
 	fork(api,{instances=1,idle=5000,hash}){
 		let mod = require(api)
-		
+		let callbacks = {}
+		let index=0		
 		let path = require.resolve(api)
 		let children = Array(instances)
 		let make = (payload)=>{
@@ -40,11 +38,12 @@ module.exports = {
 			let rm =()=>{
 				if (children[childIndex]===child)
 					children[childIndex] = null
+				clearInterval(interval)
 			}
 		
 			child.on('exit',rm)
 			
-			setInterval(()=>{
+			let interval = setInterval(()=>{
 				for (let k in callbacks) {
 					if (callbacks[k].child===child)
 						return
